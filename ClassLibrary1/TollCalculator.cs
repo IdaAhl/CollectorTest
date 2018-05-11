@@ -8,12 +8,14 @@ namespace Toll
     {
         private const int CustomFeeCarOverLimit = 1000;
         private const int CustomFooCarUnderLimit = 500;
-
         private const int WeightLimit = 1000;
 
-        private const int MotorbikeDiscount = 30;
         private const int TruckFee = 2000;
+        private const int MotorbikeDiscount = 30;
         private const int NightFeeDiscount = 50;
+        private const int NightLimitEvening = 17;
+        private const int NightLimitMoring = 6;
+
         private const int WeedendFeeExtraMultiplyer = 2 ;
 
 
@@ -23,27 +25,11 @@ namespace Toll
             return 0;
 
             var basePrice = CalculateBasePrice(vehicle);
-            var adjustedPriceEvening = AdjustPriceEvening(dateTime, basePrice);
-            var adjustedPriceWeekEnd = AdjustPriceWeekEnd(dateTime, adjustedPriceEvening);
-            return adjustedPriceWeekEnd;
-        }
+            var adjustedPriceWeekEnd = AdjustPriceWeekEnd(dateTime, basePrice);
+            var adjustedPriceNightWeekday = AdjustPriceNightWeekday(dateTime, adjustedPriceWeekEnd);
 
-        private int AdjustPriceEvening(DateTime dateTime, int basePrice)
-        {
-            if (!(IsItWeedend(dateTime) && dateTime.Hour > 17 && dateTime.Hour < 6))
-            return (basePrice * NightFeeDiscount / 100 );
-            else
-                return basePrice;
+            return adjustedPriceNightWeekday;
         }
-
-        private int AdjustPriceWeekEnd(DateTime time, int adjustedPriceEvening)
-        {
-            if (IsItWeedend(time))
-            return (adjustedPriceEvening * WeedendFeeExtraMultiplyer);
-            else
-                return adjustedPriceEvening;
-        }
-
         private int CalculateBasePrice(Vehicle vehicle)
         {
             if (vehicle.VehicleType == VehicleType.car && vehicle.Weight >= WeightLimit)
@@ -51,19 +37,41 @@ namespace Toll
             else if (vehicle.VehicleType == VehicleType.car && vehicle.Weight < WeightLimit)
                 return CustomFooCarUnderLimit;
             else if (vehicle.VehicleType == VehicleType.motorbike && vehicle.Weight >= WeightLimit)
-                return CustomFeeCarOverLimit * MotorbikeDiscount / 100;
+                return CustomFeeCarOverLimit * (100 - MotorbikeDiscount) / 100;
             else if (vehicle.VehicleType == VehicleType.motorbike && vehicle.Weight < WeightLimit)
-                return CustomFeeCarOverLimit * MotorbikeDiscount / 100;
+                return CustomFeeCarOverLimit * (100 - MotorbikeDiscount) / 100;
             else
                 return TruckFee;
         }
 
-        private bool IsItWeedend(DateTime time)
+        private int AdjustPriceWeekEnd(DateTime time, int price)
         {
-            if (time.DayOfWeek == DayOfWeek.Sunday || time.DayOfWeek == DayOfWeek.Saturday)
-                return true;
+            return (ItIsWeedend(time)) ? price * WeedendFeeExtraMultiplyer : price;
+            //if (ItIsWeedend(time)) 
+            //    return (price * WeedendFeeExtraMultiplyer);
+            //else
+            //    return price;
+        }
+
+
+        private int AdjustPriceNightWeekday(DateTime dateTime, int price)
+        {
+            if (ItIsWeedend(dateTime))
+                return price;
+            else if (dateTime.Hour > NightLimitEvening)
+                return (price * NightFeeDiscount / 100);
+            else if (dateTime.Hour < NightLimitMoring)
+                return (price * NightFeeDiscount / 100);
             else
-                return false;
+                return price;
+        }
+
+      
+        
+
+        private bool ItIsWeedend(DateTime time)
+        {
+            return (time.DayOfWeek == DayOfWeek.Sunday || time.DayOfWeek == DayOfWeek.Saturday) ? true : false;
         }
     }
 }
