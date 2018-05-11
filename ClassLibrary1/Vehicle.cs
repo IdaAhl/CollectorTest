@@ -2,15 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Toll
+namespace CustomDutyPriceCalculator
 {
-    public enum VehicleType
-    {
-        car,
-        motorbike,
-        truck
-    }
-
     public class Vehicle
     {
         public int Weight { get; set; }

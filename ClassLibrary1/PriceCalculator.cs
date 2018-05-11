@@ -2,15 +2,15 @@
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 
-namespace Toll
+namespace CustomDutyPriceCalculator
 {
-    public class TollCalculator
+    public class PriceCalculator
     {
         private const int CustomFeeCarOverLimit = 1000;
         private const int CustomFooCarUnderLimit = 500;
         private const int WeightLimit = 1000;
 
-        private const int TruckFee = 2000;
+        private const int TruckPrice = 2000;
         private const int MotorbikeDiscount = 30;
         private const int NightFeeDiscount = 50;
         private const int NightLimitEvening = 17;
@@ -19,7 +19,7 @@ namespace Toll
         private const int WeedendFeeExtraMultiplyer = 2 ;
 
 
-        public int CalculateToll(Vehicle vehicle, DateTime dateTime)
+        public int CalculatePrice(Vehicle vehicle, DateTime dateTime)
         {
             if(vehicle.EnvironmentallyFriendly == true)
             return 0;
@@ -30,29 +30,29 @@ namespace Toll
 
             return adjustedPriceNightWeekday;
         }
+
         private int CalculateBasePrice(Vehicle vehicle)
         {
-            if (vehicle.VehicleType == VehicleType.car && vehicle.Weight >= WeightLimit)
+            if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight >= WeightLimit)
                 return CustomFeeCarOverLimit;
-            else if (vehicle.VehicleType == VehicleType.car && vehicle.Weight < WeightLimit)
+            else if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight < WeightLimit)
                 return CustomFooCarUnderLimit;
-            else if (vehicle.VehicleType == VehicleType.motorbike && vehicle.Weight >= WeightLimit)
+            else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight >= WeightLimit)
                 return CustomFeeCarOverLimit * (100 - MotorbikeDiscount) / 100;
-            else if (vehicle.VehicleType == VehicleType.motorbike && vehicle.Weight < WeightLimit)
-                return CustomFeeCarOverLimit * (100 - MotorbikeDiscount) / 100;
+            else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight < WeightLimit)
+                return CustomFooCarUnderLimit * (100 - MotorbikeDiscount) / 100;
             else
-                return TruckFee;
+                return TruckPrice;
         }
 
         private int AdjustPriceWeekEnd(DateTime time, int price)
         {
             return (ItIsWeedend(time)) ? price * WeedendFeeExtraMultiplyer : price;
-            //if (ItIsWeedend(time)) 
-            //    return (price * WeedendFeeExtraMultiplyer);
-            //else
-            //    return price;
         }
-
+        private bool ItIsWeedend(DateTime time)
+        {
+            return (time.DayOfWeek == DayOfWeek.Sunday || time.DayOfWeek == DayOfWeek.Saturday) ? true : false;
+        }
 
         private int AdjustPriceNightWeekday(DateTime dateTime, int price)
         {
@@ -64,14 +64,6 @@ namespace Toll
                 return (price * NightFeeDiscount / 100);
             else
                 return price;
-        }
-
-      
-        
-
-        private bool ItIsWeedend(DateTime time)
-        {
-            return (time.DayOfWeek == DayOfWeek.Sunday || time.DayOfWeek == DayOfWeek.Saturday) ? true : false;
         }
     }
 }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toll", "ClassLibrary1\Toll.csproj", "{3409A094-F241-4857-8810-2E8341C87B62}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomDutyPriceCalculator", "ClassLibrary1\CustomDutyPriceCalculator.csproj", "{3409A094-F241-4857-8810-2E8341C87B62}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{65C88EF2-04CF-4341-9961-B0420C9EB5DA}"
 EndProject
