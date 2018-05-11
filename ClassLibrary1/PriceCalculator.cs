@@ -6,23 +6,22 @@ namespace CustomDutyPriceCalculator
 {
     public class PriceCalculator
     {
+        private const double PriceEnvironmentallyFriendly = 0;
         private const double PriceCarOverLimit = 1000;
         private const double PriceCarUnderLimit = 500;
         private const double WeightLimit = 1000;
-
         private const double TruckPrice = 2000;
         private const double MotorbikeDiscount = 30;
         private const double NightDiscount = 50;
         private const int NightLimitEvening = 17;
         private const int NightLimitMoring = 6;
-
         private const double WeedendMultiplyer = 2 ;
 
 
         public double CalculatePrice(Vehicle vehicle, DateTime dateTime)
         {
             if(vehicle.EnvironmentallyFriendly == true)
-            return 0;
+            return PriceEnvironmentallyFriendly;
 
             var basePrice = CalculateBasePrice(vehicle);
             var adjustedPriceWeekEnd = AdjustPriceWeekEnd(dateTime, basePrice);
