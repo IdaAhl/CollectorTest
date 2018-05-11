@@ -6,17 +6,17 @@ namespace CustomDutyPriceCalculator
 {
     public class PriceCalculator
     {
-        private const int CustomFeeCarOverLimit = 1000;
-        private const int CustomFooCarUnderLimit = 500;
+        private const int PriceCarOverLimit = 1000;
+        private const int PriceCarUnderLimit = 500;
         private const int WeightLimit = 1000;
 
         private const int TruckPrice = 2000;
         private const int MotorbikeDiscount = 30;
-        private const int NightFeeDiscount = 50;
+        private const int NightDiscount = 50;
         private const int NightLimitEvening = 17;
         private const int NightLimitMoring = 6;
 
-        private const int WeedendFeeExtraMultiplyer = 2 ;
+        private const int WeedendMultiplyer = 2 ;
 
 
         public int CalculatePrice(Vehicle vehicle, DateTime dateTime)
@@ -34,20 +34,20 @@ namespace CustomDutyPriceCalculator
         private int CalculateBasePrice(Vehicle vehicle)
         {
             if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight >= WeightLimit)
-                return CustomFeeCarOverLimit;
+                return PriceCarOverLimit;
             else if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight < WeightLimit)
-                return CustomFooCarUnderLimit;
+                return PriceCarUnderLimit;
             else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight >= WeightLimit)
-                return CustomFeeCarOverLimit * (100 - MotorbikeDiscount) / 100;
+                return PriceCarOverLimit * (100 - MotorbikeDiscount) / 100;
             else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight < WeightLimit)
-                return CustomFooCarUnderLimit * (100 - MotorbikeDiscount) / 100;
+                return PriceCarUnderLimit * (100 - MotorbikeDiscount) / 100;
             else
                 return TruckPrice;
         }
 
         private int AdjustPriceWeekEnd(DateTime time, int price)
         {
-            return (ItIsWeedend(time)) ? price * WeedendFeeExtraMultiplyer : price;
+            return (ItIsWeedend(time)) ? price * WeedendMultiplyer : price;
         }
         private bool ItIsWeedend(DateTime time)
         {
@@ -59,9 +59,9 @@ namespace CustomDutyPriceCalculator
             if (ItIsWeedend(dateTime))
                 return price;
             else if (dateTime.Hour > NightLimitEvening)
-                return (price * NightFeeDiscount / 100);
+                return (price * NightDiscount / 100);
             else if (dateTime.Hour < NightLimitMoring)
-                return (price * NightFeeDiscount / 100);
+                return (price * NightDiscount / 100);
             else
                 return price;
         }
