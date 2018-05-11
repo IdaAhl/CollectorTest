@@ -6,20 +6,20 @@ namespace CustomDutyPriceCalculator
 {
     public class PriceCalculator
     {
-        private const int PriceCarOverLimit = 1000;
-        private const int PriceCarUnderLimit = 500;
-        private const int WeightLimit = 1000;
+        private const double PriceCarOverLimit = 1000;
+        private const double PriceCarUnderLimit = 500;
+        private const double WeightLimit = 1000;
 
-        private const int TruckPrice = 2000;
-        private const int MotorbikeDiscount = 30;
-        private const int NightDiscount = 50;
+        private const double TruckPrice = 2000;
+        private const double MotorbikeDiscount = 30;
+        private const double NightDiscount = 50;
         private const int NightLimitEvening = 17;
         private const int NightLimitMoring = 6;
 
-        private const int WeedendMultiplyer = 2 ;
+        private const double WeedendMultiplyer = 2 ;
 
 
-        public int CalculatePrice(Vehicle vehicle, DateTime dateTime)
+        public double CalculatePrice(Vehicle vehicle, DateTime dateTime)
         {
             if(vehicle.EnvironmentallyFriendly == true)
             return 0;
@@ -31,7 +31,7 @@ namespace CustomDutyPriceCalculator
             return adjustedPriceNightWeekday;
         }
 
-        private int CalculateBasePrice(Vehicle vehicle)
+        private double CalculateBasePrice(Vehicle vehicle)
         {
             if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight >= WeightLimit)
                 return PriceCarOverLimit;
@@ -45,7 +45,7 @@ namespace CustomDutyPriceCalculator
                 return TruckPrice;
         }
 
-        private int AdjustPriceWeekEnd(DateTime time, int price)
+        private double AdjustPriceWeekEnd(DateTime time, double price)
         {
             return (ItIsWeedend(time)) ? price * WeedendMultiplyer : price;
         }
@@ -54,7 +54,7 @@ namespace CustomDutyPriceCalculator
             return (time.DayOfWeek == DayOfWeek.Sunday || time.DayOfWeek == DayOfWeek.Saturday) ? true : false;
         }
 
-        private int AdjustPriceNightWeekday(DateTime dateTime, int price)
+        private double AdjustPriceNightWeekday(DateTime dateTime, double price)
         {
             if (ItIsWeedend(dateTime))
                 return price;
