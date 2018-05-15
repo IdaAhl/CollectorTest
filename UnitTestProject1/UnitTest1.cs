@@ -32,7 +32,7 @@ namespace UnitTestProject1
         public void EnvironmentallyFriendlyMototbike()
         {
             var motorbike = new Vehicle { Weight = 500, VehicleType = VehicleType.Motorbike, EnvironmentallyFriendly = true };
-            var time = new DateTime(2018, 6, 10, 20, 24, 16);
+            var time = new DateTime(2018, 6, 13, 20, 24, 16);
 
             var customsDuty = new PriceCalculator().CalculatePrice(motorbike, time);
             Assert.AreEqual(0, customsDuty);
@@ -116,6 +116,15 @@ namespace UnitTestProject1
             var customsDuty = new PriceCalculator().CalculatePrice(car, time);
             Assert.AreEqual(2000, customsDuty);
         }
+        [TestMethod]
+        public void CarMiddsummerOverLimit()
+        {
+            var car = new Vehicle { Weight = 1250, VehicleType = VehicleType.Car, EnvironmentallyFriendly = false };
+            var time = new DateTime(2018, 6, 6, 15, 24, 16);
+
+            var customsDuty = new PriceCalculator().CalculatePrice(car, time);
+            Assert.AreEqual(2000, customsDuty);
+        }
 
         [TestMethod]
         public void CarWeekendUnderLimit()
@@ -142,7 +151,7 @@ namespace UnitTestProject1
         public void CarNightOverLimit()
         {
             var car = new Vehicle { Weight = 1250, VehicleType = VehicleType.Car, EnvironmentallyFriendly = false };
-            var time = new DateTime(2018, 5, 7, 20, 24, 16);
+            var time = new DateTime(2018, 5, 7, 18, 01, 16);
 
             var customsDuty = new PriceCalculator().CalculatePrice(car, time);
             Assert.AreEqual(500, customsDuty);

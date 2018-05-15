@@ -1,68 +1,73 @@
 ﻿using System;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
+using PublicHoliday;
 
 namespace CustomDutyPriceCalculator
 {
     public class PriceCalculator
     {
         private const double PriceEnvironmentallyFriendly = 0;
-        private const double PriceCarOverLimit = 1000;
+        private const double PriceTruck = 2000;
+        private const double PriceCarOverOrEqualLimit = 1000;
         private const double PriceCarUnderLimit = 500;
-        private const double WeightLimit = 1000;
-        private const double TruckPrice = 2000;
-        private const double MotorbikeDiscount = 30;
-        private const double NightDiscount = 50;
-        private const int NightLimitEvening = 17;
-        private const int NightLimitMoring = 6;
-        private const double WeedendMultiplyer = 2 ;
 
+        private const double MotorbikeMultiplyer = 0.7;
+        private const double WeedendMultiplyer = 2;
+        private const double NightMultiplyer = 0.5;
+
+        private const double WeightLimit = 1000;
+        private const int NightLimitEvening = 18;
+        private const int NightLimitMoring = 6;
 
         public double CalculatePrice(Vehicle vehicle, DateTime dateTime)
         {
-            if(vehicle.EnvironmentallyFriendly == true)
-            return PriceEnvironmentallyFriendly;
-
-            var basePrice = CalculateBasePrice(vehicle);
-            var adjustedPriceWeekEnd = AdjustPriceWeekEnd(dateTime, basePrice);
-            var adjustedPriceNightWeekday = AdjustPriceNightWeekday(dateTime, adjustedPriceWeekEnd);
-
-            return adjustedPriceNightWeekday;
+            var weightPrice = CalculateWeightPrice(vehicle);
+            var adjustedPriceMotorbike = AdjustedPriceMotorbike(vehicle, weightPrice);
+            var adjustedPriceTruck = AdjustedPriceTruck(vehicle, adjustedPriceMotorbike);
+            var adjustedPriceWeekendAndPublicHoliday = AdjustPriceWeekendAndPublicHoliday(dateTime, adjustedPriceTruck);
+            var adjustPriceNightWeekdays = AdjustPriceNightWeekdays(dateTime, adjustedPriceWeekendAndPublicHoliday);
+            var adjustedPriceEnvironmentallyFriendly = AdjustPriceEnvironmentallyFriendly(vehicle, adjustPriceNightWeekdays);
+            return adjustedPriceEnvironmentallyFriendly;
         }
-
-        private double CalculateBasePrice(Vehicle vehicle)
+        private double CalculateWeightPrice(Vehicle vehicle)
         {
-            if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight >= WeightLimit)
-                return PriceCarOverLimit;
-            else if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight < WeightLimit)
-                return PriceCarUnderLimit;
-            else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight >= WeightLimit)
-                return PriceCarOverLimit * (100 - MotorbikeDiscount) / 100;
-            else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight < WeightLimit)
-                return PriceCarUnderLimit * (100 - MotorbikeDiscount) / 100;
-            else
-                return TruckPrice;
+            return (vehicle.Weight >= WeightLimit) ? PriceCarOverOrEqualLimit : PriceCarUnderLimit;
         }
-
-        private double AdjustPriceWeekEnd(DateTime time, double price)
+        private double AdjustedPriceMotorbike(Vehicle vehicle, double price)
         {
-            return (ItIsWeedend(time)) ? price * WeedendMultiplyer : price;
+            return (vehicle.VehicleType == VehicleType.Motorbike) ? price * MotorbikeMultiplyer : price;
         }
-        private bool ItIsWeedend(DateTime time)
+        private double AdjustedPriceTruck(Vehicle vehicle, double price)
         {
-            return (time.DayOfWeek == DayOfWeek.Sunday || time.DayOfWeek == DayOfWeek.Saturday) ? true : false;
+            return (vehicle.VehicleType == VehicleType.Truck) ? PriceTruck : price;
         }
-
-        private double AdjustPriceNightWeekday(DateTime dateTime, double price)
+        private double AdjustPriceWeekendAndPublicHoliday(DateTime time, double price)
         {
-            if (ItIsWeedend(dateTime))
+            return (ItIsWeedendOrPublicHoliday(time)) ? price * WeedendMultiplyer : price;
+        }
+        private bool ItIsWeedendOrPublicHoliday(DateTime time)
+        {
+            if (time.DayOfWeek == DayOfWeek.Sunday || time.DayOfWeek == DayOfWeek.Saturday)
+                return true;
+
+            var holiday = new SwedenPublicHoliday();
+            return (holiday.IsPublicHoliday(time)) ? true : false;
+        }
+        private double AdjustPriceNightWeekdays(DateTime dateTime, double price)
+        {
+            if (ItIsWeedendOrPublicHoliday(dateTime))
                 return price;
-            else if (dateTime.Hour > NightLimitEvening)
-                return (price * NightDiscount / 100);
+            else if (dateTime.Hour >= NightLimitEvening)
+                return price * NightMultiplyer;
             else if (dateTime.Hour < NightLimitMoring)
-                return (price * NightDiscount / 100);
+                return price * NightMultiplyer;
             else
                 return price;
+        }
+        private double AdjustPriceEnvironmentallyFriendly(Vehicle vehicle, double price)
+        {
+            return (vehicle.EnvironmentallyFriendly == true && PriceEnvironmentallyFriendly < price) ? PriceEnvironmentallyFriendly : price;
         }
     }
 }
