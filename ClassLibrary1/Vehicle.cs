@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CustomDutyPriceCalculator
+﻿namespace Collector.CustomDutyPriceCalculator
 {
     public class Vehicle
     {

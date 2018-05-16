@@ -23,22 +23,22 @@ namespace Collector.CustomDutyPriceCalculator
             if(vehicle.EnvironmentallyFriendly)
             return PriceEnvironmentallyFriendly;
 
-            var weekdayDaytimePrice = CalculateBasePrice(vehicle);
+            var weekdayDaytimePrice = CalculateWeekdayDaytimePrice(vehicle);
             var adjustedPriceWeekEnd = AdjustPriceWeekEnd(passThroughTime, weekdayDaytimePrice);
             var adjustedPriceNightWeekday = AdjustPriceNightWeekday(passThroughTime, adjustedPriceWeekEnd);
 
             return adjustedPriceNightWeekday;
         }
 
-        private double CalculateBasePrice(Vehicle vehicle)
+        private double CalculateWeekdayDaytimePrice(Vehicle vehicle)
         {
             if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight >= WeightLimit)
                 return PriceCarOverLimit;
-            else if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight < WeightLimit)
+            if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight < WeightLimit)
                 return PriceCarUnderLimit;
-            else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight >= WeightLimit)
+            if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight >= WeightLimit)
                 return PriceCarOverLimit * MotorbikeMultiplyer;
-            else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight < WeightLimit)
+            if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight < WeightLimit)
                 return PriceCarUnderLimit * MotorbikeMultiplyer;
             else
                 return TruckPrice;

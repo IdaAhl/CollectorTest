@@ -1,4 +1,4 @@
-﻿namespace CustomDutyPriceCalculator
+﻿namespace Collector.CustomDutyPriceCalculator
 {
     public enum VehicleType
     {
