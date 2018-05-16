@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
 
-namespace CustomDutyPriceCalculator
+namespace Collector.CustomDutyPriceCalculator
 {
     public class PriceCalculator
     {
@@ -11,21 +9,23 @@ namespace CustomDutyPriceCalculator
         private const double PriceCarUnderLimit = 500;
         private const double WeightLimit = 1000;
         private const double TruckPrice = 2000;
-        private const double MotorbikeDiscount = 30;
-        private const double NightDiscount = 50;
-        private const int NightLimitEvening = 17;
+        
+        private const int NightLimitEvening = 18;
         private const int NightLimitMoring = 6;
+
         private const double WeedendMultiplyer = 2 ;
+        private const double MotorbikeMultiplyer = 0.7;
+        private const double NightMultiplyer = 0.5;
 
 
-        public double CalculatePrice(Vehicle vehicle, DateTime dateTime)
+        public double CalculatePrice(Vehicle vehicle, DateTime passThroughTime)
         {
-            if(vehicle.EnvironmentallyFriendly == true)
+            if(vehicle.EnvironmentallyFriendly)
             return PriceEnvironmentallyFriendly;
 
-            var basePrice = CalculateBasePrice(vehicle);
-            var adjustedPriceWeekEnd = AdjustPriceWeekEnd(dateTime, basePrice);
-            var adjustedPriceNightWeekday = AdjustPriceNightWeekday(dateTime, adjustedPriceWeekEnd);
+            var weekdayDaytimePrice = CalculateBasePrice(vehicle);
+            var adjustedPriceWeekEnd = AdjustPriceWeekEnd(passThroughTime, weekdayDaytimePrice);
+            var adjustedPriceNightWeekday = AdjustPriceNightWeekday(passThroughTime, adjustedPriceWeekEnd);
 
             return adjustedPriceNightWeekday;
         }
@@ -37,9 +37,9 @@ namespace CustomDutyPriceCalculator
             else if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight < WeightLimit)
                 return PriceCarUnderLimit;
             else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight >= WeightLimit)
-                return PriceCarOverLimit * (100 - MotorbikeDiscount) / 100;
+                return PriceCarOverLimit * MotorbikeMultiplyer;
             else if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight < WeightLimit)
-                return PriceCarUnderLimit * (100 - MotorbikeDiscount) / 100;
+                return PriceCarUnderLimit * MotorbikeMultiplyer;
             else
                 return TruckPrice;
         }
@@ -48,19 +48,20 @@ namespace CustomDutyPriceCalculator
         {
             return (ItIsWeedend(time)) ? price * WeedendMultiplyer : price;
         }
+
         private bool ItIsWeedend(DateTime time)
         {
-            return (time.DayOfWeek == DayOfWeek.Sunday || time.DayOfWeek == DayOfWeek.Saturday) ? true : false;
+            return (time.DayOfWeek == DayOfWeek.Sunday || time.DayOfWeek == DayOfWeek.Saturday);
         }
 
         private double AdjustPriceNightWeekday(DateTime dateTime, double price)
         {
             if (ItIsWeedend(dateTime))
                 return price;
-            else if (dateTime.Hour > NightLimitEvening)
-                return (price * NightDiscount / 100);
+            else if (dateTime.Hour >= NightLimitEvening)
+                return price * NightMultiplyer;
             else if (dateTime.Hour < NightLimitMoring)
-                return (price * NightDiscount / 100);
+                return price * NightMultiplyer;
             else
                 return price;
         }
