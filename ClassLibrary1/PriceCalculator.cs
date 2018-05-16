@@ -5,15 +5,15 @@ namespace Collector.CustomDutyPriceCalculator
     public class PriceCalculator
     {
         private const double PriceEnvironmentallyFriendly = 0;
-        private const double PriceCarOverLimit = 1000;
-        private const double PriceCarUnderLimit = 500;
+        private const double PriceOverLimit = 1000;
+        private const double PriceUnderLimit = 500;
         private const double WeightLimit = 1000;
         private const double TruckPrice = 2000;
         
         private const int NightLimitEvening = 18;
         private const int NightLimitMoring = 6;
 
-        private const double WeedendMultiplyer = 2 ;
+        private const double WeekendMultiplyer = 2 ;
         private const double MotorbikeMultiplyer = 0.7;
         private const double NightMultiplyer = 0.5;
 
@@ -32,7 +32,7 @@ namespace Collector.CustomDutyPriceCalculator
 
         private double CalculateWeekdayDaytimePrice(Vehicle vehicle)
         {
-            double price = (vehicle.Weight >= WeightLimit) ? PriceCarOverLimit : PriceCarUnderLimit;
+            double price = (vehicle.Weight >= WeightLimit) ? PriceOverLimit : PriceUnderLimit;
 
             switch (vehicle.VehicleType)
             {
@@ -48,7 +48,7 @@ namespace Collector.CustomDutyPriceCalculator
 
         private double AdjustPriceWeekEnd(DateTime time, double price)
         {
-            return (ItIsWeedend(time)) ? price * WeedendMultiplyer : price;
+            return (ItIsWeedend(time)) ? price * WeekendMultiplyer : price;
         }
 
         private bool ItIsWeedend(DateTime time)
