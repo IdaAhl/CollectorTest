@@ -32,16 +32,18 @@ namespace Collector.CustomDutyPriceCalculator
 
         private double CalculateWeekdayDaytimePrice(Vehicle vehicle)
         {
-            if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight >= WeightLimit)
-                return PriceCarOverLimit;
-            if (vehicle.VehicleType == VehicleType.Car && vehicle.Weight < WeightLimit)
-                return PriceCarUnderLimit;
-            if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight >= WeightLimit)
-                return PriceCarOverLimit * MotorbikeMultiplyer;
-            if (vehicle.VehicleType == VehicleType.Motorbike && vehicle.Weight < WeightLimit)
-                return PriceCarUnderLimit * MotorbikeMultiplyer;
-            else
-                return TruckPrice;
+            double price = (vehicle.Weight >= WeightLimit) ? PriceCarOverLimit : PriceCarUnderLimit;
+
+            switch (vehicle.VehicleType)
+            {
+                case VehicleType.Motorbike:
+                    return price * MotorbikeMultiplyer;
+                case VehicleType.Truck:
+                    return TruckPrice;
+                default:
+                    return price;
+            }
+
         }
 
         private double AdjustPriceWeekEnd(DateTime time, double price)
