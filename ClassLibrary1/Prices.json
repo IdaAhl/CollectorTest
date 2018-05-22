@@ -1,0 +1,12 @@
+﻿{
+  "PriceEnvironmentallyFriendly": 0,
+  "PriceOverLimit": 1000,
+  "PriceUnderLimit": 500,
+  "TruckPrice": 2000,
+  "WeekendMultiplyer": 2,
+  "MotorbikeMultiplyer":  0.7,
+  "NightMultiplyer":  0.5
+}
+
+
+

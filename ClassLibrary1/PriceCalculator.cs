@@ -1,27 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Collector.CustomDutyPriceCalculator
 {
     public class PriceCalculator
     {
-        private const double PriceEnvironmentallyFriendly = 0;
-        private const double PriceOverLimit = 1000;
-        private const double PriceUnderLimit = 500;
-        private const double WeightLimit = 1000;
-        private const double TruckPrice = 2000;
-        
-        private const int NightLimitEvening = 18;
-        private const int NightLimitMoring = 6;
+        private readonly Prices _prices;
+        private readonly Limits _limits;
 
-        private const double WeekendMultiplyer = 2 ;
-        private const double MotorbikeMultiplyer = 0.7;
-        private const double NightMultiplyer = 0.5;
-
+        public PriceCalculator()
+        {
+            _prices = ParsePrices();
+            _limits = ParseLimits();
+        }
 
         public double CalculatePrice(Vehicle vehicle, DateTime passThroughTime)
         {
-            if(vehicle.EnvironmentallyFriendly)
-            return PriceEnvironmentallyFriendly;
+            if (vehicle.EnvironmentallyFriendly)
+                return _prices.PriceEnvironmentallyFriendly;
 
             var weekdayDaytimePrice = CalculateWeekdayDaytimePrice(vehicle);
             var adjustedPriceWeekEnd = AdjustPriceWeekEnd(passThroughTime, weekdayDaytimePrice);
@@ -32,14 +30,14 @@ namespace Collector.CustomDutyPriceCalculator
 
         private double CalculateWeekdayDaytimePrice(Vehicle vehicle)
         {
-            double price = (vehicle.Weight >= WeightLimit) ? PriceOverLimit : PriceUnderLimit;
+            double price = (vehicle.Weight >= _limits.WeightLimit) ? _prices.PriceOverLimit : _prices.PriceUnderLimit;
 
             switch (vehicle.VehicleType)
             {
                 case VehicleType.Motorbike:
-                    return price * MotorbikeMultiplyer;
+                    return price * _prices.MotorbikeMultiplyer;
                 case VehicleType.Truck:
-                    return TruckPrice;
+                    return _prices.TruckPrice;
                 default:
                     return price;
             }
@@ -48,7 +46,7 @@ namespace Collector.CustomDutyPriceCalculator
 
         private double AdjustPriceWeekEnd(DateTime time, double price)
         {
-            return (ItIsWeedend(time)) ? price * WeekendMultiplyer : price;
+            return (ItIsWeedend(time)) ? price * _prices.WeekendMultiplyer : price;
         }
 
         private bool ItIsWeedend(DateTime time)
@@ -60,12 +58,32 @@ namespace Collector.CustomDutyPriceCalculator
         {
             if (ItIsWeedend(dateTime))
                 return price;
-            else if (dateTime.Hour >= NightLimitEvening)
-                return price * NightMultiplyer;
-            else if (dateTime.Hour < NightLimitMoring)
-                return price * NightMultiplyer;
+            else if (dateTime.Hour >= _limits.NightLimitEvening)
+                return price * _prices.NightMultiplyer;
+            else if (dateTime.Hour < _limits.NightLimitMoring)
+                return price * _prices.NightMultiplyer;
             else
                 return price;
+        }
+
+        private Limits ParseLimits()
+        {
+            using (StreamReader r = new StreamReader(@"C:\Project\CollectorTest\CollectorTest\ClassLibrary1\Limits.json"))
+            {
+                string json = r.ReadToEnd();
+                var constantObject = JsonConvert.DeserializeObject<Limits>(json);
+                return constantObject;
+            }
+        }
+
+        private Prices ParsePrices()
+        {
+            using (StreamReader r = new StreamReader(@"C:\Project\CollectorTest\CollectorTest\ClassLibrary1\Prices.json"))
+            {
+                string json = r.ReadToEnd();
+                var constantObject = JsonConvert.DeserializeObject<Prices>(json);
+                return constantObject;
+            }
         }
     }
 }

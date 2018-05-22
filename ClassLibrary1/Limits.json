@@ -1,0 +1,5 @@
+﻿{
+  "WeightLimit": 1000,
+  "NightLimitEvening": 18,
+  "NightLimitMoring": 6
+}
